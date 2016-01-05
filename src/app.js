@@ -1,7 +1,9 @@
 import express from 'express'
 import request from 'request'
 import cheerio from 'cheerio'
+import moment from 'moment'
 
+moment.locale('ja');
 const app = express();
 
 app.get('/:id', (req, res) => {
@@ -24,6 +26,8 @@ app.get('/:id', (req, res) => {
       return {
         user:  $(this).data('user'),
         epoch: $(this).data('epoch'),
+        // 2015/11/08 11:51:41
+        timestamp: moment.unix($(this).data('epoch')).format('YYYY/MM/DD HH:mm:ss'),
         comment: $(this).find('span.comment').text()
       };
     }).get();
