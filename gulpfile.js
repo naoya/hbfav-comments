@@ -8,20 +8,14 @@ function errorHandler (err) {
 }
 
 gulp.task('compile', [
-  'compile-js',
-  'compile-html'
+  'compile-js'
 ]);
 
 gulp.task('compile-js', function() {
   gulp.src("./src/**/*.{js,jsx}")
     .pipe(babel())
     .on('error', errorHandler)
-    .pipe(gulp.dest("dist/"));
-});
-
-gulp.task('compile-html', function() {
-  gulp.src("src/**/*.html")
-    .pipe(gulp.dest("dist"));
+    .pipe(gulp.dest("./"));
 });
 
 gulp.task('watch', ['compile'], function () {
