@@ -11,7 +11,7 @@ function getFollowersCommentsFragment(user, eid) {
     request({
       method: 'GET',
       uri: `http://b.hatena.ne.jp/${user}/bookmark?fragment=comments&eids=${eid}`,
-      headers: {'User-Agent': 'HBFav/0.0.1'},
+      headers: {'User-Agent': 'HBFav-Comments/0.0.1'},
       timeout: 5 * 1000
     }, (err, response, body) => {
       if (err) {
