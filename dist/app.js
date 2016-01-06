@@ -21,36 +21,41 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _moment2.default.locale('ja');
 var app = (0, _express2.default)();
 
-app.get('/:id', function (req, res) {
-  var query = {
-    me: req.params.id,
-    eid: req.query.eid
-  };
-
-  (0, _request2.default)({
-    method: 'GET',
-    uri: 'http://b.hatena.ne.jp/' + query.me + '/bookmark?fragment=comments&eids=' + query.eid,
-    headers: { 'User-Agent': 'HBFav/0.0.1' },
-    timeout: 5 * 1000
-  }, function (err, response, body) {
-    // TODO: error handling
-    // console.log(body);
-
-    var $ = _cheerio2.default.load(body);
-    var comments = $('ul.entry-comment > li.others').map(function () {
-      return {
-        user: $(this).data('user'),
-        epoch: $(this).data('epoch'),
-        // 2015/11/08 11:51:41
-        timestamp: _moment2.default.unix($(this).data('epoch')).format('YYYY/MM/DD HH:mm:ss'),
-        comment: $(this).find('span.comment').text()
-      };
-    }).get();
-
-    res.send({
-      eid: query.eid,
-      comments: comments
+function getFollowersCommentsFragment(user, eid) {
+  return new Promise(function (resolve) {
+    (0, _request2.default)({
+      method: 'GET',
+      uri: 'http://b.hatena.ne.jp/' + user + '/bookmark?fragment=comments&eids=' + eid,
+      headers: { 'User-Agent': 'HBFav/0.0.1' },
+      timeout: 5 * 1000
+    }, function (err, response, body) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(body);
     });
+  });
+}
+
+function parseFragmentHtml(html) {
+  var $ = _cheerio2.default.load(html);
+  return $('ul.entry-comment > li.others').map(function () {
+    return {
+      user: $(this).data('user'),
+      epoch: $(this).data('epoch'),
+      // 2015/11/08 11:51:41
+      timestamp: _moment2.default.unix($(this).data('epoch')).format('YYYY/MM/DD HH:mm:ss'),
+      comment: $(this).find('span.comment').text()
+    };
+  }).get();
+}
+
+app.get('/:id', function (req, res) {
+  // TODO: Error Handling
+  getFollowersCommentsFragment(req.params.id, req.query.eid).then(function (html) {
+    var comments = parseFragmentHtml(html);
+    res.send({ eid: req.query.eid, comments: comments });
   });
 });
 
