@@ -1,10 +1,12 @@
 import express from 'express'
+import errorhandler from 'errorhandler'
 import request from 'request'
 import cheerio from 'cheerio'
 import moment from 'moment'
 
 moment.locale('ja');
 const app = express();
+app.use(errorhandler());
 
 function getFollowersCommentsFragment(user, eid) {
   return new Promise((resolve) => {
