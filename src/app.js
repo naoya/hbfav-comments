@@ -27,7 +27,7 @@ function getFollowersCommentsFragment(user, eid) {
 
 function parseFragmentHtml(html) {
   const $ = cheerio.load(html);
-  return $('ul.entry-comment > li.others').map(function() {
+  return $('ul.entry-comment').find('li.mine, li.others').map(function() {
     return {
       user:  $(this).data('user'),
       epoch: $(this).data('epoch'),
