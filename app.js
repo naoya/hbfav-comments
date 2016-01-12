@@ -32,7 +32,10 @@ function getEntryInfo(url) {
     (0, _request2.default)({
       method: 'GET',
       uri: 'http://b.hatena.ne.jp/entry/jsonlite/?url=' + encodedUrl,
-      headers: { 'User-Agent': 'HBFav-Comments/0.0.1' },
+      headers: {
+        'User-Agent': 'HBFav-Comments/0.0.1',
+        'Cache-Control': 'no-cache'
+      },
       timeout: 5 * 1000
     }, function (err, response, body) {
       if (err) {
