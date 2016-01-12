@@ -8,8 +8,26 @@ moment.locale('ja');
 const app = express();
 app.use(errorhandler());
 
+function getEntryInfo(url) {
+  return new Promise((resolve, reject) => {
+    const encodedUrl = encodeURIComponent(url);
+    request({
+      method: 'GET',
+      uri: `http://b.hatena.ne.jp/entry/jsonlite/?url=${encodedUrl}`,
+      headers: {'User-Agent': 'HBFav-Comments/0.0.1'},
+      timeout: 5 * 1000
+    }, (err, response, body) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(body);
+    });
+  });
+}
+
 function getFollowersCommentsFragment(user, eid) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     request({
       method: 'GET',
       uri: `http://b.hatena.ne.jp/${user}/bookmark?fragment=comments&eids=${eid}`,
@@ -39,11 +57,21 @@ function parseFragmentHtml(html) {
 }
 
 app.get('/:id', (req, res) => {
-  // TODO: Error Handling
-  getFollowersCommentsFragment(req.params.id, req.query.eid).then((html) => {
-    const comments = parseFragmentHtml(html);
-    res.send({ eid: req.query.eid, comments: comments });    
-  });
+  let responseData;
+  getEntryInfo(req.query.url)
+    .then((json) => { return JSON.parse(json) })
+    .then((entry) => {
+      responseData = entry;
+      return getFollowersCommentsFragment(req.params.id, entry.eid) 
+    })
+    .then((html) => { return parseFragmentHtml(html) })
+    .then((followers) => {
+      responseData.followers = followers;
+      res.send(responseData) 
+    })
+    .catch(function(reason) {
+      res.send(reason);
+    });
 });
 
 app.listen(process.env.PORT || 3000);

@@ -26,8 +26,26 @@ _moment2.default.locale('ja');
 var app = (0, _express2.default)();
 app.use((0, _errorhandler2.default)());
 
+function getEntryInfo(url) {
+  return new Promise(function (resolve, reject) {
+    var encodedUrl = encodeURIComponent(url);
+    (0, _request2.default)({
+      method: 'GET',
+      uri: 'http://b.hatena.ne.jp/entry/jsonlite/?url=' + encodedUrl,
+      headers: { 'User-Agent': 'HBFav-Comments/0.0.1' },
+      timeout: 5 * 1000
+    }, function (err, response, body) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(body);
+    });
+  });
+}
+
 function getFollowersCommentsFragment(user, eid) {
-  return new Promise(function (resolve) {
+  return new Promise(function (resolve, reject) {
     (0, _request2.default)({
       method: 'GET',
       uri: 'http://b.hatena.ne.jp/' + user + '/bookmark?fragment=comments&eids=' + eid,
@@ -57,10 +75,19 @@ function parseFragmentHtml(html) {
 }
 
 app.get('/:id', function (req, res) {
-  // TODO: Error Handling
-  getFollowersCommentsFragment(req.params.id, req.query.eid).then(function (html) {
-    var comments = parseFragmentHtml(html);
-    res.send({ eid: req.query.eid, comments: comments });
+  var responseData = undefined;
+  getEntryInfo(req.query.url).then(function (json) {
+    return JSON.parse(json);
+  }).then(function (entry) {
+    responseData = entry;
+    return getFollowersCommentsFragment(req.params.id, entry.eid);
+  }).then(function (html) {
+    return parseFragmentHtml(html);
+  }).then(function (followers) {
+    responseData.followers = followers;
+    res.send(responseData);
+  }).catch(function (reason) {
+    res.send(reason);
   });
 });
 
