@@ -8,6 +8,10 @@ moment.locale('ja');
 const app = express();
 app.use(errorhandler());
 
+process.on('uncaughtException', (err) => { 
+  console.log(err) 
+});
+
 function getEntryInfo(url) {
   return new Promise((resolve, reject) => {
     const encodedUrl = encodeURIComponent(url);

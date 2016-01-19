@@ -26,6 +26,10 @@ _moment2.default.locale('ja');
 var app = (0, _express2.default)();
 app.use((0, _errorhandler2.default)());
 
+process.on('uncaughtException', function (err) {
+  console.log(err);
+});
+
 function getEntryInfo(url) {
   return new Promise(function (resolve, reject) {
     var encodedUrl = encodeURIComponent(url);
