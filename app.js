@@ -22,7 +22,6 @@ var _moment2 = _interopRequireDefault(_moment);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_moment2.default.locale('ja');
 var app = (0, _express2.default)();
 app.use((0, _errorhandler2.default)());
 
@@ -75,7 +74,7 @@ function parseFragmentHtml(html) {
       user: $(this).data('user'),
       epoch: $(this).data('epoch'),
       // 2015/11/08 11:51:41
-      timestamp: _moment2.default.unix($(this).data('epoch')).format('YYYY/MM/DD HH:mm:ss'),
+      timestamp: _moment2.default.unix($(this).data('epoch')).utcOffset(9).format('YYYY/MM/DD HH:mm:ss'),
       comment: $(this).find('span.comment').text()
     };
   }).get();

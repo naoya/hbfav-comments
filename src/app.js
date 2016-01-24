@@ -4,7 +4,6 @@ import request from 'request'
 import cheerio from 'cheerio'
 import moment from 'moment'
 
-moment.locale('ja');
 const app = express();
 app.use(errorhandler());
 
@@ -57,7 +56,7 @@ function parseFragmentHtml(html) {
       user:  $(this).data('user'),
       epoch: $(this).data('epoch'),
       // 2015/11/08 11:51:41
-      timestamp: moment.unix($(this).data('epoch')).format('YYYY/MM/DD HH:mm:ss'),
+      timestamp: moment.unix($(this).data('epoch')).utcOffset(9).format('YYYY/MM/DD HH:mm:ss'),
       comment: $(this).find('span.comment').text()
     };
   }).get();
