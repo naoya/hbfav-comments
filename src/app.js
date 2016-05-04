@@ -21,7 +21,7 @@ function getEntryInfo(url) {
         'User-Agent': 'HBFav-Comments/0.0.1',
         'Cache-Control': 'no-cache'
       },
-      timeout: 5 * 1000
+      timeout: 10 * 1000
     }, (err, response, body) => {
       if (err) {
         reject(err);
