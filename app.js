@@ -86,13 +86,18 @@ app.get('/:id', function (req, res) {
     return JSON.parse(json);
   }).then(function (entry) {
     responseData = entry;
-    return getFollowersCommentsFragment(req.params.id, entry.eid);
-  }).then(function (html) {
-    return parseFragmentHtml(html);
-  }).then(function (followers) {
-    responseData.followers = followers;
+    responseData.followers = [];
     res.send(responseData);
-  }).catch(function (reason) {
+  })
+  // 2018.3 仕様が変わって取得できなくなった
+  //   return getFollowersCommentsFragment(req.params.id, entry.eid)
+  // })
+  // .then((html) => { return parseFragmentHtml(html) })
+  // .then((followers) => {
+  //   responseData.followers = followers;
+  //   res.send(responseData)
+  // })
+  .catch(function (reason) {
     res.send(reason);
   });
 });
