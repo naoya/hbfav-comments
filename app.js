@@ -88,8 +88,7 @@ app.get('/:id', function (req, res) {
     entry.bookmarks.forEach(function (bookmark) {
       // 2018.5.18 ･･･ 返ってくる timestamp のフォーマットが変わった (秒がなくなった)
       // ので、以前同様になるよう補正
-      var dt = new Date(bookmark.timestamp);
-      bookmark.timestamp = dt.toLocaleString();
+      bookmark.timestamp = (0, _moment2.default)(bookmark.timestamp).format('YYYY/MM/DD HH:mm:ss');
     });
     responseData = entry;
     responseData.followers = [];
