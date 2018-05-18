@@ -85,6 +85,12 @@ app.get('/:id', function (req, res) {
   getEntryInfo(req.query.url).then(function (json) {
     return JSON.parse(json);
   }).then(function (entry) {
+    entry.bookmarks.forEach(function (bookmark) {
+      // 2018.5.18 ･･･ 返ってくる timestamp のフォーマットが変わった (秒がなくなった)
+      // ので、以前同様になるよう補正
+      var dt = new Date(bookmark.timestamp);
+      bookmark.timestamp = dt.toLocaleString();
+    });
     responseData = entry;
     responseData.followers = [];
     res.send(responseData);
